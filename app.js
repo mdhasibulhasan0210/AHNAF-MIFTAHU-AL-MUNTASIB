@@ -1,6 +1,6 @@
 /* =========================================================
    AHNAF MIFTAHU AL MUNTASIB — interactions + Three.js
-   Interactive multi-color particle-wave background.
+   Interactive 3D color particle FOUNTAIN background.
    ========================================================= */
 (function () {
   "use strict";
@@ -9,10 +9,10 @@
   const isTouch = window.matchMedia("(max-width: 900px)").matches;
 
   /* ------------------------------------------------------------------
-     1. THREE.JS  —  interactive color particle wave
-        A grid of points rippling on a sine field, drifting with the
-        mouse. Particles are tinted across a warm-to-cool palette
-        (amber · coral · violet · teal) that shifts with the crests.
+     1. THREE.JS  —  3D particle fountain
+        Thousands of points erupt from a central jet, arc under gravity
+        and fall back into a glowing pool. Tinted across a warm-to-cool
+        palette (amber · coral · violet · teal). Drifts with the mouse.
   ------------------------------------------------------------------ */
   function initThree() {
     if (!window.THREE) return;
@@ -22,89 +22,97 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a0810, 0.05);
+    scene.fog = new THREE.FogExp2(0x0a0810, 0.045);
 
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 4.2, 14);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(0, 4.5, 15);
+    camera.lookAt(0, 3, 0);
 
-    // --- build the point grid ---
-    const COLS = isTouch ? 60 : 110;
-    const ROWS = isTouch ? 60 : 110;
-    const SPAN = 34;
-    const count = COLS * ROWS;
-
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-    const base = new Float32Array(count * 2); // x,z home for each point
-
-    // rich palette — points sample across these hues
+    // --- palette ---
     const palette = [
       new THREE.Color(0xffb347), // amber
       new THREE.Color(0xff6a88), // coral
       new THREE.Color(0x8a6cff), // violet
       new THREE.Color(0x3ad6c5), // teal
-      new THREE.Color(0xf5f2ee), // ink (sparse highlights)
+      new THREE.Color(0xf5f2ee), // ink highlight
     ];
 
-    let i = 0;
-    for (let x = 0; x < COLS; x++) {
-      for (let z = 0; z < ROWS; z++) {
-        const px = (x / (COLS - 1) - 0.5) * SPAN;
-        const pz = (z / (ROWS - 1) - 0.5) * SPAN;
-        positions[i * 3] = px;
-        positions[i * 3 + 1] = 0;
-        positions[i * 3 + 2] = pz;
-        base[i * 2] = px;
-        base[i * 2 + 1] = pz;
+    // --- particle buffers ---
+    const N = isTouch ? 1100 : 2400;
+    const positions = new Float32Array(N * 3);
+    const colors = new Float32Array(N * 3);
+    const vel = new Float32Array(N * 3); // velocity per particle
+    const life = new Float32Array(N);    // seconds alive
+    const maxLife = new Float32Array(N);
 
-        // pick a hue by distance so color forms concentric bands,
-        // with a scattered few pushed to bright ink highlights
-        const d = Math.sqrt(px * px + pz * pz);
-        let c;
-        if (Math.random() > 0.92) {
-          c = palette[4];
-        } else {
-          const band = Math.floor((d * 0.14 + x * 0.03 + z * 0.02)) % 4;
-          c = palette[band];
-        }
-        colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
-        i++;
-      }
+    const GRAV = -11.0;
+    const GROUND = 0;
+
+    // launch a particle from the jet at the origin
+    function spawn(k, prewarm) {
+      positions[k * 3] = (Math.random() - 0.5) * 0.4;
+      positions[k * 3 + 1] = 0.1;
+      positions[k * 3 + 2] = (Math.random() - 0.5) * 0.4;
+
+      const angle = Math.random() * Math.PI * 2;
+      const spread = Math.pow(Math.random(), 0.7) * 2.6; // outward speed
+      const up = 6.5 + Math.random() * 4.0;              // upward speed
+      vel[k * 3] = Math.cos(angle) * spread;
+      vel[k * 3 + 1] = up;
+      vel[k * 3 + 2] = Math.sin(angle) * spread;
+
+      life[k] = prewarm ? Math.random() * 1.8 : 0;
+      maxLife[k] = 1.6 + Math.random() * 1.2;
+
+      // warm hues at the base, cooler picks toward the crest
+      const c = up > 9 ? palette[2 + Math.floor(Math.random() * 3)]
+                       : palette[Math.floor(Math.random() * 5)];
+      colors[k * 3] = c.r; colors[k * 3 + 1] = c.g; colors[k * 3 + 2] = c.b;
     }
+    for (let k = 0; k < N; k++) spawn(k, true);
 
     const geom = new THREE.BufferGeometry();
     geom.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geom.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
-    // soft round sprite so points aren't hard squares
+    // soft round sprite so points glow instead of being hard squares
     const sprite = (function () {
       const c = document.createElement("canvas");
       c.width = c.height = 64;
       const g = c.getContext("2d");
       const grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
       grd.addColorStop(0, "rgba(255,255,255,1)");
-      grd.addColorStop(0.4, "rgba(255,255,255,0.6)");
+      grd.addColorStop(0.35, "rgba(255,255,255,0.65)");
       grd.addColorStop(1, "rgba(255,255,255,0)");
       g.fillStyle = grd;
       g.fillRect(0, 0, 64, 64);
-      const t = new THREE.CanvasTexture(c);
-      return t;
+      return new THREE.CanvasTexture(c);
     })();
 
     const mat = new THREE.PointsMaterial({
-      size: isTouch ? 0.17 : 0.14,
+      size: isTouch ? 0.22 : 0.17,
       map: sprite,
       vertexColors: true,
       transparent: true,
-      opacity: 0.92,
+      opacity: 0.95,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true,
     });
 
-    const points = new THREE.Points(geom, mat);
-    scene.add(points);
+    const fountain = new THREE.Points(geom, mat);
+    scene.add(fountain);
+
+    // faint glowing pool disc at the base
+    const poolGeo = new THREE.RingGeometry(0.15, 5.5, 64);
+    const poolMat = new THREE.MeshBasicMaterial({
+      color: 0x8a6cff, transparent: true, opacity: 0.06,
+      blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false,
+    });
+    const pool = new THREE.Mesh(poolGeo, poolMat);
+    pool.rotation.x = -Math.PI / 2;
+    pool.position.y = 0.02;
+    scene.add(pool);
 
     // --- pointer parallax ---
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
@@ -120,29 +128,35 @@
     const posAttr = geom.attributes.position;
 
     function animate() {
+      const dt = Math.min(clock.getDelta(), 0.033);
       const t = clock.getElapsedTime();
 
-      // ripple the height field
-      for (let k = 0; k < count; k++) {
-        const bx = base[k * 2];
-        const bz = base[k * 2 + 1];
-        const d = Math.sqrt(bx * bx + bz * bz);
-        const y =
-          Math.sin(d * 0.5 - t * 1.1) * 0.9 * Math.exp(-d * 0.05) +
-          Math.sin(bx * 0.32 + t * 0.7) * 0.35 +
-          Math.cos(bz * 0.3 - t * 0.6) * 0.35;
-        posAttr.array[k * 3 + 1] = y;
+      // integrate the fountain
+      for (let k = 0; k < N; k++) {
+        life[k] += dt;
+        vel[k * 3 + 1] += GRAV * dt;
+        positions[k * 3]     += vel[k * 3]     * dt;
+        positions[k * 3 + 1] += vel[k * 3 + 1] * dt;
+        positions[k * 3 + 2] += vel[k * 3 + 2] * dt;
+
+        // recycle when it falls back to the pool or its life runs out
+        if (positions[k * 3 + 1] <= GROUND && vel[k * 3 + 1] < 0) spawn(k, false);
+        else if (life[k] > maxLife[k]) spawn(k, false);
       }
       posAttr.needsUpdate = true;
 
-      // ease pointer + gentle auto-drift
+      // pool shimmer
+      pool.material.opacity = 0.05 + Math.sin(t * 1.6) * 0.02;
+
+      // ease pointer + gentle auto-rotate for the 3D read
       mouse.x += (mouse.tx - mouse.x) * 0.05;
       mouse.y += (mouse.ty - mouse.y) * 0.05;
 
-      points.rotation.y = mouse.x * 0.5 + t * 0.02;
+      fountain.rotation.y = mouse.x * 0.6 + t * 0.12;
+      pool.rotation.z = t * 0.05;
       camera.position.x = mouse.x * 5;
-      camera.position.y = 4.2 - mouse.y * 2.5 - scrollY * 0.002;
-      camera.lookAt(0, 0, 0);
+      camera.position.y = 4.5 - mouse.y * 2.2 - scrollY * 0.0016;
+      camera.lookAt(0, 3, 0);
 
       renderer.render(scene, camera);
       if (!prefersReduced) requestAnimationFrame(animate);
