@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ahnaf Miftahu Al Muntasib — a cinematic, color-rich personal portfolio. Photography, presence, and moody storytelling in light &amp; color." />
+  <meta name="theme-color" content="#0a0810" />
+  <title>Ahnaf Miftahu Al Muntasib — Portfolio</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== Custom cursor ===== -->
+  <div class="cursor" data-cursor></div>
+  <div class="cursor-dot" data-cursor-dot></div>
+
+  <!-- ===== Preloader ===== -->
+  <div class="preloader" data-preloader>
+    <div class="preloader__inner">
+      <div class="preloader__name">
+        <span>A</span><span>H</span><span>N</span><span>A</span><span>F</span>
+      </div>
+      <div class="preloader__bar"><span data-preloader-bar></span></div>
+      <div class="preloader__count"><span data-preloader-count>0</span>%</div>
+    </div>
+  </div>
+
+  <!-- ===== Three.js background ===== -->
+  <canvas id="bg-canvas"></canvas>
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="grain"></div>
+
+  <!-- ===== Navigation ===== -->
+  <header class="nav" data-nav>
+    <a href="#hero" class="nav__logo" data-magnetic>AM<span>/</span>AL&nbsp;MUNTASIB</a>
+    <nav class="nav__links" data-menu>
+      <a href="#about" data-link>About</a>
+      <a href="#gallery" data-link>Gallery</a>
+      <a href="#contact" data-link>Contact</a>
+    </nav>
+    <button class="nav__toggle" data-menu-toggle aria-label="Menu">
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <main>
+    <!-- ===== Hero ===== -->
+    <section class="hero" id="hero">
+      <div class="hero__meta hero__meta--left">
+        <span>Est. 2026</span>
+        <span>Cinematic · In Color</span>
+      </div>
+      <div class="hero__meta hero__meta--right">
+        <span>Dhaka — BD</span>
+        <span>Scroll to explore</span>
+      </div>
+
+      <h1 class="hero__title" data-reveal-lines>
+        <span class="line"><span>AHNAF</span></span>
+        <span class="line"><span>MIFTAHU</span></span>
+        <span class="line line--accent"><span>AL MUNTASIB</span></span>
+      </h1>
+
+      <p class="hero__tagline" data-reveal>
+        A vivid study in light, shadow &amp; presence — a personal visual archive, painted in color.
+      </p>
+
+      <a href="#gallery" class="hero__scroll" data-magnetic>
+        <span class="hero__scroll-line"></span>
+        View the archive
+      </a>
+    </section>
+
+    <!-- ===== About ===== -->
+    <section class="about" id="about">
+      <div class="about__index" data-reveal>01 — Profile</div>
+      <div class="about__grid">
+        <figure class="about__image" data-tilt>
+          <img src="assets/1.jpg" alt="Portrait of Ahnaf Miftahu Al Muntasib" loading="lazy" />
+          <figcaption>Fig. 01 / Self</figcaption>
+        </figure>
+        <div class="about__text">
+          <h2 data-reveal>Presence, framed in <em>living color.</em></h2>
+          <p data-reveal>
+            I&apos;m <strong>Ahnaf Miftahu Al Muntasib</strong> — this is a personal archive of
+            moments where color does the talking. Every frame here trades silence for
+            saturation: skies on fire, silhouettes against neon dusk, and the honest grain
+            of a phone camera chasing the light.
+          </p>
+          <p data-reveal>
+            The work leans into contrast, negative space, and stillness — but never shies
+            from a bold hue. No filters chasing trends — just light behaving the way it wants to.
+          </p>
+          <ul class="about__stats">
+            <li data-reveal><span class="num" data-count="07">0</span><span class="lbl">Frames</span></li>
+            <li data-reveal><span class="num" data-count="100">0</span><span class="lbl">% In Color</span></li>
+            <li data-reveal><span class="num" data-count="26">0</span><span class="lbl">Vision '26</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Marquee ===== -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Shadow&nbsp;·&nbsp;</span><span>Silhouette&nbsp;·&nbsp;</span><span>Stillness&nbsp;·&nbsp;</span>
+        <span>Grain&nbsp;·&nbsp;</span><span>Contrast&nbsp;·&nbsp;</span><span>Color&nbsp;·&nbsp;</span>
+        <span>Shadow&nbsp;·&nbsp;</span><span>Silhouette&nbsp;·&nbsp;</span><span>Stillness&nbsp;·&nbsp;</span>
+        <span>Grain&nbsp;·&nbsp;</span><span>Contrast&nbsp;·&nbsp;</span><span>Color&nbsp;·&nbsp;</span>
+      </div>
+    </div>
+
+    <!-- ===== Gallery ===== -->
+    <section class="gallery" id="gallery">
+      <div class="gallery__head">
+        <div class="about__index" data-reveal>02 — The Archive</div>
+        <h2 data-reveal>Selected <em>frames</em></h2>
+      </div>
+
+      <div class="gallery__grid" data-gallery>
+        <figure class="gallery__item gallery__item--tall" data-lightbox="assets/1.jpg" data-reveal>
+          <img src="assets/1.jpg" alt="Frame 01" loading="lazy" />
+          <figcaption><span>01</span><span>Study / Form</span></figcaption>
+        </figure>
+        <figure class="gallery__item" data-lightbox="assets/2.jpg" data-reveal>
+          <img src="assets/2.jpg" alt="Frame 02" loading="lazy" />
+          <figcaption><span>02</span><span>Silhouette / Sky</span></figcaption>
+        </figure>
+        <figure class="gallery__item" data-lightbox="assets/3.jpg" data-reveal>
+          <img src="assets/3.jpg" alt="Frame 03" loading="lazy" />
+          <figcaption><span>03</span><span>Motion / Night</span></figcaption>
+        </figure>
+        <figure class="gallery__item gallery__item--wide" data-lightbox="assets/4.jpg" data-reveal>
+          <img src="assets/4.jpg" alt="Frame 04" loading="lazy" />
+          <figcaption><span>04</span><span>Frame / Light</span></figcaption>
+        </figure>
+        <figure class="gallery__item" data-lightbox="assets/5.jpg" data-reveal>
+          <img src="assets/5.jpg" alt="Frame 05" loading="lazy" />
+          <figcaption><span>05</span><span>Mood / Grain</span></figcaption>
+        </figure>
+        <figure class="gallery__item" data-lightbox="assets/6.jpg" data-reveal>
+          <img src="assets/6.jpg" alt="Frame 06" loading="lazy" />
+          <figcaption><span>06</span><span>Quiet / Contrast</span></figcaption>
+        </figure>
+        <figure class="gallery__item gallery__item--tall" data-lightbox="assets/7.jpg" data-reveal>
+          <img src="assets/7.jpg" alt="Frame 07" loading="lazy" />
+          <figcaption><span>07</span><span>Dusk / Still</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===== Contact ===== -->
+    <section class="contact" id="contact">
+      <div class="about__index" data-reveal>03 — Connect</div>
+      <a href="mailto:hello@almuntasib.me" class="contact__mail" data-magnetic data-reveal>
+        hello@almuntasib.me
+      </a>
+      <p class="contact__note" data-reveal>
+        For collaborations, portraits, or just to say the light looked good today.
+      </p>
+      <ul class="contact__socials">
+        <li data-reveal><a href="#" data-link data-magnetic>Instagram</a></li>
+        <li data-reveal><a href="#" data-link data-magnetic>Behance</a></li>
+        <li data-reveal><a href="#" data-link data-magnetic>Facebook</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 Ahnaf Miftahu Al Muntasib</span>
+    <span>Designed in color</span>
+    <button class="footer__top" data-magnetic onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
+  </footer>
+
+  <!-- ===== Lightbox ===== -->
+  <div class="lightbox" data-lb hidden>
+    <button class="lightbox__close" data-lb-close aria-label="Close">✕</button>
+    <button class="lightbox__nav lightbox__nav--prev" data-lb-prev aria-label="Previous">‹</button>
+    <img src="" alt="" data-lb-img />
+    <button class="lightbox__nav lightbox__nav--next" data-lb-next aria-label="Next">›</button>
+    <div class="lightbox__caption" data-lb-caption></div>
+  </div>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

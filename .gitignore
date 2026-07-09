@@ -1,0 +1,9 @@
+# Unrelated sub-project (has its own git repo)
+black-orbit/
+
+# Editor
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
