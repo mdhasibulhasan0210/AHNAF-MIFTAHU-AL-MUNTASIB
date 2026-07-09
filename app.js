@@ -23,16 +23,16 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a0810, 0.032);
+    scene.fog = new THREE.FogExp2(0x050506, 0.03);
 
-    const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 120);
-    camera.position.set(0, 6, 18);
-    camera.lookAt(0, -1, -6);
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 130);
+    camera.position.set(0, 7, 20);
+    camera.lookAt(0, -1.5, -8);
 
     // --- grid of surface points ---
-    const COLS = isTouch ? 72 : 118;
-    const ROWS = isTouch ? 72 : 118;
-    const SPAN = 46;
+    const COLS = isTouch ? 74 : 122;
+    const ROWS = isTouch ? 74 : 122;
+    const SPAN = 52;
     const count = COLS * ROWS;
 
     const positions = new Float32Array(count * 3);
@@ -65,17 +65,18 @@
       return { dx: dx / len, dz: dz / len, k, A, Q, w: speed * k };
     }
     const waves = [
-      makeWave(0.2, 1.0, 16, 1.05, 0.70), // main tidal swell (rolls toward camera)
-      makeWave(0.6, 0.8, 9, 0.55, 0.60),
-      makeWave(-0.4, 0.9, 5.5, 0.30, 0.50),
-      makeWave(0.15, 1.0, 3.0, 0.15, 0.42), // fine ripples
+      makeWave(0.2, 1.0, 22, 2.1, 0.82),  // massive tidal swell rolling in
+      makeWave(0.55, 0.85, 12, 1.15, 0.72),
+      makeWave(-0.4, 0.95, 7, 0.6, 0.6),
+      makeWave(0.15, 1.0, 4.2, 0.32, 0.5),
+      makeWave(-0.6, 0.7, 2.6, 0.16, 0.42), // fine chop on the crests
     ];
     let totalA = 0;
     for (const wv of waves) totalA += wv.A;
 
-    // deep water -> warm foam gradient (kept as raw channels for speed)
-    const deep = { r: 0.34, g: 0.55, b: 0.92 };  // periwinkle blue
-    const foam = { r: 1.0, g: 0.82, b: 0.55 };    // warm amber crest
+    // near-black water -> white foam (raw channels for speed)
+    const deep = { r: 0.09, g: 0.10, b: 0.12 }; // deep dark sea
+    const foam = { r: 1.0, g: 1.0, b: 1.0 };     // white crest foam
 
     // soft round sprite so points glow instead of being hard squares
     const sprite = (function () {
@@ -92,7 +93,7 @@
     })();
 
     const mat = new THREE.PointsMaterial({
-      size: isTouch ? 0.2 : 0.15,
+      size: isTouch ? 0.22 : 0.16,
       map: sprite,
       vertexColors: true,
       transparent: true,
@@ -146,7 +147,7 @@
         // color by crest height: deep water -> warm foam
         let h = (py + totalA) / (2 * totalA); // 0..1
         h = h < 0 ? 0 : h > 1 ? 1 : h;
-        const f = h * h * h; // sharpen so only crests foam
+        const f = h * h * h * h; // sharpen so only crest tips foam white
         colAttr.array[k * 3]     = deep.r + (foam.r - deep.r) * f;
         colAttr.array[k * 3 + 1] = deep.g + (foam.g - deep.g) * f;
         colAttr.array[k * 3 + 2] = deep.b + (foam.b - deep.b) * f;
@@ -159,8 +160,8 @@
       mouse.y += (mouse.ty - mouse.y) * 0.05;
 
       camera.position.x = mouse.x * 5;
-      camera.position.y = 6 - mouse.y * 2.4 - scrollY * 0.0016;
-      camera.lookAt(mouse.x * 1.5, -1, -6);
+      camera.position.y = 7 - mouse.y * 2.4 - scrollY * 0.0016;
+      camera.lookAt(mouse.x * 1.5, -1.5, -8);
 
       renderer.render(scene, camera);
       if (!prefersReduced) requestAnimationFrame(animate);
